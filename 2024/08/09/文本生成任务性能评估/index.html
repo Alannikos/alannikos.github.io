@@ -32,13 +32,13 @@
 <meta property="og:site_name" content="Alannikos">
 <meta property="og:description" content="一. 概述在当今快速发展的信息技术领域，文本生成技术已成为人工智能领域的一个重要分支。它不仅涉及到自然语言处理（NLP）的多个子领域，如语言模型、机器翻译和文本摘要，而且对于提高用户体验和自动化内容创作具有重要意义。因此，对文本生成系统的性能进行评估是至关重要的，下面本文将会介绍一些常见的文本生成任务评价指标及代码实现。 二. 常见指标及代码实现1. BLEU指标（1）介绍BLEU（bilingu">
 <meta property="og:locale">
-<meta property="og:image" content="https://alannikos.github.io/2024/08/09/assets/3/ppl-17231771703631.gif">
+<meta property="og:image" content="https://alannikos.github.io/assets/3/ppl-17231771703631.gif">
 <meta property="article:published_time" content="2024-08-09T08:28:23.000Z">
-<meta property="article:modified_time" content="2024-08-09T09:21:59.616Z">
+<meta property="article:modified_time" content="2024-08-11T15:50:57.222Z">
 <meta property="article:author" content="Alannikos">
 <meta property="article:tag" content="metrics">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://alannikos.github.io/2024/08/09/assets/3/ppl-17231771703631.gif">
+<meta name="twitter:image" content="https://alannikos.github.io/assets/3/ppl-17231771703631.gif">
 
   <style>
     :root {
@@ -50,6 +50,10 @@
 <script src="/js/global.js"></script>
 
 <!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+
       <link rel="stylesheet" href="https://unpkg.com/@docsearch/css@3.5.2/dist/style.css">
       
 <link rel="stylesheet" href="/css/plugins/docsearch.css">
@@ -149,8 +153,7 @@
     <h3 id="一-概述"><a href="#一-概述" class="headerlink" title="一. 概述"></a>一. 概述</h3><p>在当今快速发展的信息技术领域，文本生成技术已成为人工智能领域的一个重要分支。它不仅涉及到自然语言处理（NLP）的多个子领域，如语言模型、机器翻译和文本摘要，而且对于提高用户体验和自动化内容创作具有重要意义。因此，对文本生成系统的性能进行评估是至关重要的，下面本文将会介绍一些常见的文本生成任务评价指标及代码实现。</p>
 <h3 id="二-常见指标及代码实现"><a href="#二-常见指标及代码实现" class="headerlink" title="二. 常见指标及代码实现"></a>二. 常见指标及代码实现</h3><h4 id="1-BLEU指标"><a href="#1-BLEU指标" class="headerlink" title="1. BLEU指标"></a>1. BLEU指标</h4><h5 id="（1）介绍"><a href="#（1）介绍" class="headerlink" title="（1）介绍"></a>（1）介绍</h5><p><strong>BLEU（bilingual evaluation understudy）</strong>，首次出现在IBM发表的一篇名为BLEU: a Method for Automatic Evaluation of Machine Translation的论文中，详情可见参考文献<a target="_blank" rel="noopener" href="https://aclanthology.org/P02-1040.pdf">P02-1040.pdf (aclanthology.org)</a>。BLEU的中文翻译为<strong>双语评估替补</strong>，所谓替补可以理解为通过机器代替人类进行翻译，所以这项指标的含义就是评估机器翻译结果的质量，但是这项指标有时也会被用在除机器翻译之外的文本生成任务。</p>
 <h5 id="（2）计算过程"><a href="#（2）计算过程" class="headerlink" title="（2）计算过程"></a>（2）计算过程</h5><p>公式如下所示：</p>
-<script type="math/tex; mode=display">
-\begin{aligned}&\mathrm{BP}=\left\{\begin{array}{ll}1&\quad\mathrm{if}\ c>r\\e^{(1-r/c)}&\quad\mathrm{if}\ c\leq r\end{array}\right..\\\\&\mathrm{BLEU=BP\cdot\exp\left(\sum_{n=1}^{N}w_{n}\log p_{n}\right).}\end{aligned}  \tag{1}</script><div class="table-container">
+<p>$$<br>\begin{aligned}&amp;\mathrm{BP}&#x3D;\left{\begin{array}{ll}1&amp;\quad\mathrm{if}\ c&gt;r\e^{(1-r&#x2F;c)}&amp;\quad\mathrm{if}\ c\leq r\end{array}\right..\\&amp;\mathrm{BLEU&#x3D;BP\cdot\exp\left(\sum_{n&#x3D;1}^{N}w_{n}\log p_{n}\right).}\end{aligned}  \tag{1}<br>$$</p>
 <table>
 <thead>
 <tr>
@@ -158,8 +161,7 @@
 <th>解释</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>c</td>
 <td>candidate 机器译文的文本长度</td>
 </tr>
@@ -183,9 +185,7 @@
 <td>$p_n$</td>
 <td>modified precision score</td>
 </tr>
-</tbody>
-</table>
-</div>
+</tbody></table>
 <h5 id="（3）代码实现"><a href="#（3）代码实现" class="headerlink" title="（3）代码实现"></a>（3）代码实现</h5><p>为了简单起见，这里使用nltk提供的计算方式来进行计算，有兴趣的小伙伴可以阅读对应的源码以获得更深入的了解：</p>
 <pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> nltk<span class="token punctuation">.</span>translate<span class="token punctuation">.</span>bleu_score <span class="token keyword">import</span> sentence_bleu
 
@@ -211,6 +211,9 @@
 	
     <span class="token keyword">print</span><span class="token punctuation">(</span>score<span class="token punctuation">)</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
 <h4 id="2-METEOR指标"><a href="#2-METEOR指标" class="headerlink" title="2. METEOR指标"></a>2. METEOR指标</h4><h5 id="（1）介绍-1"><a href="#（1）介绍-1" class="headerlink" title="（1）介绍"></a>（1）介绍</h5><p>在自然语言处理（NLP）中，<strong>METEOR（Metric for Evaluation of Translation with Explicit ORdering）</strong>是一种被广泛使用的用于评估机器翻译质量的指标，可以计算生成文本和参考文本之间的相似程度。由Banerjee和Lavie于2005年提出，METEOR旨在克服BLEU等传统翻译评估指标的一些局限性。以下是METEOR的几个关键特点和优势：</p>
 <ol>
 <li><strong>词形匹配（Word Form Matching）</strong>：METEOR不仅仅依赖于词的精确匹配，还考虑了词形变化。例如，它会将“run”和“running”视为相关词，这有助于更准确地评估翻译的语言多样性和自然性。</li>
@@ -218,16 +221,14 @@
 <li><strong>词序权重（Order Penalty）</strong>：METEOR对词序进行惩罚，确保翻译的词序接近参考翻译。这使得它比BLEU更能捕捉到翻译的语言流畅性。</li>
 <li><strong>基于片段的评估（Chunk-Based Evaluation）</strong>：METEOR基于有意义的片段（chunks）进行评估，而不是单独的词。这有助于更好地评估句子结构和连贯性。</li>
 </ol>
-<h5 id="（2）计算过程-1"><a href="#（2）计算过程-1" class="headerlink" title="（2）计算过程"></a>（2）计算过程</h5><div class="table-container">
-<table>
+<h5 id="（2）计算过程-1"><a href="#（2）计算过程-1" class="headerlink" title="（2）计算过程"></a>（2）计算过程</h5><table>
 <thead>
 <tr>
 <th>符号</th>
 <th>机器翻译中常见取值</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>$\alpha$</td>
 <td>3</td>
 </tr>
@@ -239,24 +240,22 @@
 <td>$\gamma$</td>
 <td>3</td>
 </tr>
-</tbody>
-</table>
-</div>
+</tbody></table>
 <ul>
 <li>首先计算 unigram 情况下的准确率P和召回率R，得到调和均值F值：</li>
 </ul>
-<script type="math/tex; mode=display">
-P=\frac{\text{unigrams\_matched}}{\text{unigrams\_MT\_output}}  \tag{2}</script><script type="math/tex; mode=display">
-R=\frac{\text{unigrams\_matched}}{\text{unigrams\_Reference}}  \tag{3}</script><script type="math/tex; mode=display">
-F=\frac{(\alpha^2+1)P}{R+\alpha P}</script><ul>
+<p>$$<br>P&#x3D;\frac{\text{unigrams_matched}}{\text{unigrams_MT_output}}  \tag{2}<br>$$</p>
+<p>$$<br>R&#x3D;\frac{\text{unigrams_matched}}{\text{unigrams_Reference}}  \tag{3}<br>$$</p>
+<p>$$<br>F&#x3D;\frac{(\alpha^2+1)P}{R+\alpha P}<br>$$</p>
+<ul>
 <li>然后再计算惩罚因子</li>
 </ul>
-<script type="math/tex; mode=display">
-Penalty=\gamma(\frac{chunks}{unigrams\_matched})^\theta</script><ul>
+<p>$$<br>Penalty&#x3D;\gamma(\frac{chunks}{unigrams_matched})^\theta<br>$$</p>
+<ul>
 <li>最后计算出METEOR值</li>
 </ul>
-<script type="math/tex; mode=display">
-Meteor=(1-Penalty)\cdot F</script><h5 id="（3）代码实现-1"><a href="#（3）代码实现-1" class="headerlink" title="（3）代码实现"></a>（3）代码实现</h5><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> nltk<span class="token punctuation">.</span>translate<span class="token punctuation">.</span>meteor_score <span class="token keyword">import</span> meteor_score
+<p>$$<br>Meteor&#x3D;(1-Penalty)\cdot F<br>$$</p>
+<h5 id="（3）代码实现-1"><a href="#（3）代码实现-1" class="headerlink" title="（3）代码实现"></a>（3）代码实现</h5><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> nltk<span class="token punctuation">.</span>translate<span class="token punctuation">.</span>meteor_score <span class="token keyword">import</span> meteor_score
 
 <span class="token keyword">def</span> <span class="token function">cal_meteor</span><span class="token punctuation">(</span>reference<span class="token punctuation">,</span> candidate<span class="token punctuation">)</span><span class="token punctuation">:</span>
     <span class="token triple-quoted-string string">"""
@@ -277,6 +276,9 @@ Meteor=(1-Penalty)\cdot F</script><h5 id="（3）代码实现-1"><a href="#（3�
     score <span class="token operator">=</span> cal_meteor<span class="token punctuation">(</span>reference<span class="token punctuation">,</span> candidate<span class="token punctuation">)</span>
 	
     <span class="token keyword">print</span><span class="token punctuation">(</span>score<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
 <h4 id="3-ROUGE"><a href="#3-ROUGE" class="headerlink" title="3. ROUGE"></a>3. ROUGE</h4><h5 id="（1）介绍-2"><a href="#（1）介绍-2" class="headerlink" title="（1）介绍"></a>（1）介绍</h5><p>ROUGE（Recall-Oriented Understudy for Gisting Evaluation）算法由 Chin-Yew Lin 在 2004 年的论文<a target="_blank" rel="noopener" href="https://www.aclweb.org/anthology/W04-1013.pdf">《ROUGE: A Package for Automatic Evaluation of Summaries》</a>中提出。与 BLEU类似，通过统计生成的摘要与参考摘要集合之间重叠的基本单元的数目来评估摘要的质量，该方法已成为自动文摘系统评价的主流方法。在前面我们介绍过BLEU分数，但是BLEU关注的是<strong>生成序列中的单个词或短语是否在参考序列中是否出现</strong>，这可能会带来一个问题：生成的序列也许是通顺的，但是其实和原文相关度不大（形象来说就是胡乱翻译），那么ROUGE就是这个问题的一种解决方案：ROUGR算法能够衡量参考序列中的单个词或短语是否在生成序列中出现，即相比BLEU关注生成序列的准确性而言更加关注<strong>生成序列的召回率。</strong></p>
 <blockquote>
 <p>以下内容基于文本摘要生成任务进行介绍。</p>
@@ -286,21 +288,16 @@ Meteor=(1-Penalty)\cdot F</script><h5 id="（3）代码实现-1"><a href="#（3�
 <li>ROUGE-N （将BLEU的精确率改为<strong>召回率</strong>） </li>
 <li>ROUGE-L （将BLEU的n-gram改为<strong>公共子序列（LCS）</strong>）</li>
 </ul>
-<h6 id="a-ROUGE-N"><a href="#a-ROUGE-N" class="headerlink" title="a. ROUGE-N"></a>a. ROUGE-N</h6><p>计算公式为：</p>
-<script type="math/tex; mode=display">
-\text{ROUGE-N}=\frac{\sum_{S\in\{\text{Ref Summaries}\}}\sum_{\text{n-gram}\in S}Count_{match}(\text{n-gram})}{\sum_{S\in\{\text{Ref Summaries}\}}\sum_{\text{n-gram}\in S}Count(\text{n-gram})}</script><p>分子就是生成摘要与参考摘要相匹配的$n-gram$个数，分母就是参考摘要中所有的$n-gram$个数。</p>
+<h6 id="a-ROUGE-N"><a href="#a-ROUGE-N" class="headerlink" title="a. ROUGE-N"></a>a. ROUGE-N</h6><p>计算公式为：<br>$$<br>\text{ROUGE-N}&#x3D;\frac{\sum_{S\in{\text{Ref Summaries}}}\sum_{\text{n-gram}\in S}Count_{match}(\text{n-gram})}{\sum_{S\in{\text{Ref Summaries}}}\sum_{\text{n-gram}\in S}Count(\text{n-gram})}<br>$$</p>
+<p>分子就是生成摘要与参考摘要相匹配的$n-gram$个数，分母就是参考摘要中所有的$n-gram$个数。</p>
 <p>符号说明：</p>
 <ul>
 <li>$Ref\ Summaries$ 表示参考摘要集合</li>
 <li>$Count_{match}(n-gram)$ 表示生成的摘要和参考摘要中同时出现的 $n-gram$的个数</li>
 <li>$Count(n-gram)$则表示参考摘要中出现的$n-gram$个数。</li>
 </ul>
-<h6 id="b-ROUGE-L"><a href="#b-ROUGE-L" class="headerlink" title="b. ROUGE-L"></a>b. ROUGE-L</h6><script type="math/tex; mode=display">
-\begin{aligned}
-&R_{lcs} =\frac{LCS(X,Y)}m \\
-&P_{lcs} =\frac{LCS(X,Y)}n \\
-&F_{lcs} =\frac{(1+b^2)R_{lcs}P_{lcs}}{R_{lcs}+b^2P_{lcs}} 
-\end{aligned}</script><p>$LCS(X,Y)$是$X$,$Y$的最长公共子序列的长度，$m$和$n$分别是参考摘要和生成摘要的词汇数量，则我们可以知道$R_{lcs}$,$P_{lcs}$ 分别表示召回率和准确率。最后的 $F_{lcs}$即是所说的 ROUGE-L分数。当b很大时，说明ROUGE_L分数几乎是只考虑$R_{lcs}$。</p>
+<h6 id="b-ROUGE-L"><a href="#b-ROUGE-L" class="headerlink" title="b. ROUGE-L"></a>b. ROUGE-L</h6><p>$$<br>\begin{aligned}<br>&amp;R_{lcs} &#x3D;\frac{LCS(X,Y)}m \<br>&amp;P_{lcs} &#x3D;\frac{LCS(X,Y)}n \<br>&amp;F_{lcs} &#x3D;\frac{(1+b^2)R_{lcs}P_{lcs}}{R_{lcs}+b^2P_{lcs}}<br>\end{aligned}<br>$$</p>
+<p>$LCS(X,Y)$是$X$,$Y$的最长公共子序列的长度，$m$和$n$分别是参考摘要和生成摘要的词汇数量，则我们可以知道$R_{lcs}$,$P_{lcs}$ 分别表示召回率和准确率。最后的 $F_{lcs}$即是所说的 ROUGE-L分数。当b很大时，说明ROUGE_L分数几乎是只考虑$R_{lcs}$。</p>
 <h5 id="（3）代码实现-2"><a href="#（3）代码实现-2" class="headerlink" title="（3）代码实现"></a>（3）代码实现</h5><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> rouge <span class="token keyword">import</span> Rouge
  
 <span class="token comment"># 示例文本</span>
@@ -322,24 +319,13 @@ scores <span class="token operator">=</span> rouge<span class="token punctuation
 <span class="token comment"># print("ROUGE-1 recall:", scores[0]["rouge-1"]["r"])</span>
 <span class="token comment"># print("ROUGE-1 F1 score:", scores[0]["rouge-1"]["f"])</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <h4 id="4-Perplexity"><a href="#4-Perplexity" class="headerlink" title="4. Perplexity"></a>4. Perplexity</h4><h5 id="（1）介绍-3"><a href="#（1）介绍-3" class="headerlink" title="（1）介绍"></a>（1）介绍</h5><p>Perplexity是一个在大模型评测中十分常见的评测指标，也经常用来衡量语言模型的好快，本文主要介绍这个指标在文本生成领域的应用。<strong>对于某个特定的序列，模型生成这个序列的概率越大，则其困惑度越小。</strong></p>
-<h5 id="（2）计算过程-3"><a href="#（2）计算过程-3" class="headerlink" title="（2）计算过程"></a>（2）计算过程</h5><p><img src="../assets/3/ppl-17231771703631.gif" alt="ppl"></p>
-<p>首先，对于一个给定的序列$S=W_{1},W_{2},…,W_{k}$，由于现在大部分的大语言模型是基于Decoder-only架构的，生成一个序列的时候，每个时间步的token的生成概率不是完全独立的，而是会受到前面一些token的影响，则要生成整个序列S的概率为联合概率</p>
-<script type="math/tex; mode=display">
-P(S)=P(W_{1},W_{2},...,W_{k})=p(W_{1})P(W_{2}|W_{1})...P(W_{k}|W_{1},W_{2},...,W_{k-1})</script><p>但是这个概率有一个问题：$p(W_{1})，P(W_{2}|W_{1})，…，P(W_{k}|W_{1},W_{2},…,W_{k-1})$这些概率都是$&lt; 1$的，那么当句子的长度越长，那么整个$P(S)$的值必然越小，所以为了解决这个问题，可以对上面的计算公式加上<strong>几何平均</strong>，即</p>
-<script type="math/tex; mode=display">
-\sqrt[K]{\prod_{i=1}^KP(W_i|W_{1:i-1})}</script><p>同时上面介绍过，生成这个序列的概率越大，则其困惑度越小，那么可以取上面这个几何平均的值的倒数作为最终的指标，最终计算公式为：</p>
-<script type="math/tex; mode=display">
-\text{Perplexity}=\frac1{\sqrt[K]{\prod_{i=1}^KP(W_i|W_{1:i-1})}}</script><p>与交叉熵的关系：</p>
-<script type="math/tex; mode=display">
-\begin{aligned}
-\mathrm{Perplexity}& =\frac1{\sqrt[K]{\prod_{i=1}^KP(W_i|W_{1:i-1})}} \\
-& \overset{\text{同时取指数与对数}}{=} \exp\left(\log\left(\frac1{\sqrt[K]{\prod_{i=1}^KP(W_i|W_{1:i-1})}}\right)\right) \\
-& \overset{\text{将幂次放到右上角}}{=} \exp\left(\log\left(\left(\prod_{i=1}^KP(W_i|W_{1:i-1})\right)^{-\frac1K}\right)\right) \\
-& \overset{\text{提出对数式的幂次}}{=} \exp\Bigg(-\frac1K\sum_{i=1}^K\log(P(W_i|W_{1:i-1}))\Bigg) \\
-& \overset{\text{用对数的计算公式}}{=} \exp\left(\frac1K\sum_{i=1}^K\log\frac1{P(W_i|W_{1:i-1})}\right)
-\end{aligned}</script><blockquote>
-<p>log计算公式：<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/对数公式/5557846">对数公式_百度百科 (baidu.com)</a></p>
+<h5 id="（2）计算过程-3"><a href="#（2）计算过程-3" class="headerlink" title="（2）计算过程"></a>（2）计算过程</h5><p><img src="/../assets/3/ppl-17231771703631.gif" alt="ppl"></p>
+<p>首先，对于一个给定的序列$S&#x3D;W_{1},W_{2},…,W_{k}$，由于现在大部分的大语言模型是基于Decoder-only架构的，生成一个序列的时候，每个时间步的token的生成概率不是完全独立的，而是会受到前面一些token的影响，则要生成整个序列S的概率为联合概率<br>$$<br>P(S)&#x3D;P(W_{1},W_{2},…,W_{k})&#x3D;p(W_{1})P(W_{2}|W_{1})…P(W_{k}|W_{1},W_{2},…,W_{k-1})<br>$$<br>但是这个概率有一个问题：$p(W_{1})，P(W_{2}|W_{1})，…，P(W_{k}|W_{1},W_{2},…,W_{k-1})$这些概率都是$&lt; 1$的，那么当句子的长度越长，那么整个$P(S)$的值必然越小，所以为了解决这个问题，可以对上面的计算公式加上<strong>几何平均</strong>，即<br>$$<br>\sqrt[K]{\prod_{i&#x3D;1}^KP(W_i|W_{1:i-1})}<br>$$<br>同时上面介绍过，生成这个序列的概率越大，则其困惑度越小，那么可以取上面这个几何平均的值的倒数作为最终的指标，最终计算公式为：<br>$$<br>\text{Perplexity}&#x3D;\frac1{\sqrt[K]{\prod_{i&#x3D;1}^KP(W_i|W_{1:i-1})}}<br>$$</p>
+<p>与交叉熵的关系：<br>$$<br>\begin{aligned}<br>\mathrm{Perplexity}&amp; &#x3D;\frac1{\sqrt[K]{\prod_{i&#x3D;1}^KP(W_i|W_{1:i-1})}} \<br>&amp; \overset{\text{同时取指数与对数}}{&#x3D;} \exp\left(\log\left(\frac1{\sqrt[K]{\prod_{i&#x3D;1}^KP(W_i|W_{1:i-1})}}\right)\right) \<br>&amp; \overset{\text{将幂次放到右上角}}{&#x3D;} \exp\left(\log\left(\left(\prod_{i&#x3D;1}^KP(W_i|W_{1:i-1})\right)^{-\frac1K}\right)\right) \<br>&amp; \overset{\text{提出对数式的幂次}}{&#x3D;} \exp\Bigg(-\frac1K\sum_{i&#x3D;1}^K\log(P(W_i|W_{1:i-1}))\Bigg) \<br>&amp; \overset{\text{用对数的计算公式}}{&#x3D;} \exp\left(\frac1K\sum_{i&#x3D;1}^K\log\frac1{P(W_i|W_{1:i-1})}\right)<br>\end{aligned}<br>$$</p>
+<blockquote>
+<p>log计算公式：<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E5%AF%B9%E6%95%B0%E5%85%AC%E5%BC%8F/5557846">对数公式_百度百科 (baidu.com)</a></p>
 </blockquote>
 <h5 id="（3）代码实现-3"><a href="#（3）代码实现-3" class="headerlink" title="（3）代码实现"></a>（3）代码实现</h5><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> torch
 <span class="token keyword">from</span> torch <span class="token keyword">import</span> Tensor
@@ -366,10 +352,10 @@ P(S)=P(W_{1},W_{2},...,W_{k})=p(W_{1})P(W_{2}|W_{1})...P(W_{k}|W_{1},W_{2},...,W
     <span class="token triple-quoted-string string">"""
     PPL值为:  4.331761360168457
     """</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h4 id="5-CIDEr"><a href="#5-CIDEr" class="headerlink" title="5. CIDEr"></a>5. CIDEr</h4><p>论文地址：<a href="https://link.zhihu.com/?target=https%3A//arxiv.org/pdf/1411.5726.pdf">https://arxiv.org/pdf/1411.5726.pdf</a></p>
+
+<h4 id="5-CIDEr"><a href="#5-CIDEr" class="headerlink" title="5. CIDEr"></a>5. CIDEr</h4><p>论文地址：<a href="https://link.zhihu.com/?target=https://arxiv.org/pdf/1411.5726.pdf">https://arxiv.org/pdf/1411.5726.pdf</a></p>
 <h5 id="（1）介绍-4"><a href="#（1）介绍-4" class="headerlink" title="（1）介绍"></a>（1）介绍</h5><p><strong>CIDEr（Consensus-based Image Description Evaluation）</strong>是Vedantm 在 2015 年计算机视觉与模式识别大会上提出来的针对图像摘要问题的评价标准。首先，该指标是基于<strong>共识（Consensus）</strong>的评价标准，基本原理是通过计算待测评语句与其他人工描述句之间的相似性来评价相似性。研究者证明 CIDEr 在与人工共识的匹配度上要好于其它评价指标。其次，CIDEr基于句子层面上的，它将每个句子看做一个文档，每个参考句与候选句之间通过计算TF-IDF向量的余弦距离来度量其相似性。候选句的CIDEr分数是与所有句子计算出的分数的平均。</p>
 <h5 id="（2）计算过程-4"><a href="#（2）计算过程-4" class="headerlink" title="（2）计算过程"></a>（2）计算过程</h5><p>符号说明：</p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -377,18 +363,17 @@ P(S)=P(W_{1},W_{2},...,W_{k})=p(W_{1})P(W_{2}|W_{1})...P(W_{k}|W_{1},W_{2},...,W
 <th>含义</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>$m$</td>
 <td>代表候选句有m句</td>
 </tr>
 <tr>
 <td>$n$</td>
-<td>一般取4。n = 1, 2, 3, 4对应n-gram的n，如1-gram，…</td>
+<td>一般取4。n &#x3D; 1, 2, 3, 4对应n-gram的n，如1-gram，…</td>
 </tr>
 <tr>
 <td>$w_n$</td>
-<td>不同n-gram的权重，一般可以取1/n</td>
+<td>不同n-gram的权重，一般可以取1&#x2F;n</td>
 </tr>
 <tr>
 <td>$\mathrm{g^n(c_i)}$</td>
@@ -399,25 +384,23 @@ P(S)=P(W_{1},W_{2},...,W_{k})=p(W_{1})P(W_{2}|W_{1})...P(W_{k}|W_{1},W_{2},...,W
 <td>表示句子$s_ij$的n-gram的TF-IDF weight 向量</td>
 </tr>
 <tr>
-<td>$\mathrm{C}=\{\mathrm{c}_1,\mathrm{c}_2,…,\mathrm{c}_\mathrm{N}\}$</td>
+<td>$\mathrm{C}&#x3D;{\mathrm{c}_1,\mathrm{c}_2,…,\mathrm{c}_\mathrm{N}}$</td>
 <td>候选句集合（Candidates），$c_i$就是一个句子</td>
 </tr>
 <tr>
-<td>$\mathrm{S_i}=\{\mathrm{s_{i1}},\mathrm{s_{i2}},…,\mathrm{s_{im}}\}$</td>
+<td>$\mathrm{S_i}&#x3D;{\mathrm{s_{i1}},\mathrm{s_{i2}},…,\mathrm{s_{im}}}$</td>
 <td>参照集(References)，i表示第i个图像，m代表第几个参考句。</td>
 </tr>
-</tbody>
-</table>
-</div>
-<h6 id="a-计算n-gram的-CIDE-n-值"><a href="#a-计算n-gram的-CIDE-n-值" class="headerlink" title="a. 计算n-gram的$CIDE_n$值"></a>a. 计算n-gram的$CIDE_n$值</h6><script type="math/tex; mode=display">
-\mathrm{CIDEr}_n(c_i,S_i)=\frac1m\sum_j\frac{\boldsymbol{g^n}(c_i)\cdot\boldsymbol{g^n}(s_{ij})}{\|\boldsymbol{g^n}(c_i)\|\|\boldsymbol{g^n}(s_{ij})\|}</script><h6 id="b-计算所有n-gram的平均值"><a href="#b-计算所有n-gram的平均值" class="headerlink" title="b. 计算所有n-gram的平均值"></a>b. 计算所有n-gram的平均值</h6><script type="math/tex; mode=display">
-\mathrm{CIDEr}(c_i,S_i)=\sum_{n=1}^Nw_n\mathrm{CIDEr}_n(c_i,S_i)</script><h5 id="（3）代码实现-4"><a href="#（3）代码实现-4" class="headerlink" title="（3）代码实现"></a>（3）代码实现</h5><p>有兴趣的读者可以访问<a target="_blank" rel="noopener" href="https://github.com/tylin/coco-caption">tylin/coco-caption</a>来获取相关的代码实现。</p>
+</tbody></table>
+<h6 id="a-计算n-gram的-CIDE-n-值"><a href="#a-计算n-gram的-CIDE-n-值" class="headerlink" title="a. 计算n-gram的$CIDE_n$值"></a>a. 计算n-gram的$CIDE_n$值</h6><p>$$<br>\mathrm{CIDEr}<em>n(c_i,S_i)&#x3D;\frac1m\sum_j\frac{\boldsymbol{g^n}(c_i)\cdot\boldsymbol{g^n}(s</em>{ij})}{|\boldsymbol{g^n}(c_i)||\boldsymbol{g^n}(s_{ij})|}<br>$$</p>
+<h6 id="b-计算所有n-gram的平均值"><a href="#b-计算所有n-gram的平均值" class="headerlink" title="b. 计算所有n-gram的平均值"></a>b. 计算所有n-gram的平均值</h6><p>$$<br>\mathrm{CIDEr}(c_i,S_i)&#x3D;\sum_{n&#x3D;1}^Nw_n\mathrm{CIDEr}_n(c_i,S_i)<br>$$</p>
+<h5 id="（3）代码实现-4"><a href="#（3）代码实现-4" class="headerlink" title="（3）代码实现"></a>（3）代码实现</h5><p>有兴趣的读者可以访问<a target="_blank" rel="noopener" href="https://github.com/tylin/coco-caption">tylin&#x2F;coco-caption</a>来获取相关的代码实现。</p>
 <h3 id="三-总结"><a href="#三-总结" class="headerlink" title="三. 总结"></a>三. 总结</h3><p>本文主要讲述了<strong>文本生成任务性能评估</strong>的多个常见指标，包括<strong>BLEU、METEOR、ROUGE、Perplexity和CIDEr</strong>，这些指标为评估文本生成系统提供了全面的视角。每个指标都有其各自的<strong>侧重点和适用场景</strong>，共同构成了一个多维度的评估体系。在实际应用中，选择合适的评估指标需要根据具体任务的需求和特点来决定。此外，随着自然语言处理技术的不断进步，新的评估方法和指标也在不断涌现，为文本生成任务的性能评估提供了更多可能性。</p>
 <p>通过本文的介绍，我们希望读者能够对文本生成任务的性能评估有一个基本的认识，并能够在自己的研究或开发工作中，有效地应用这些评估指标。</p>
 <h3 id="四-参考文献"><a href="#四-参考文献" class="headerlink" title="四. 参考文献"></a>四. 参考文献</h3><ol>
 <li>Kishore Papineni, Salim Roukos, Todd Ward, and Wei-Jing Zhu. 2002. <a target="_blank" rel="noopener" href="https://aclanthology.org/P02-1040">Bleu: a Method for Automatic Evaluation of Machine Translation</a>. In <em>Proceedings of the 40th Annual Meeting of the Association for Computational Linguistics</em>, pages 311–318, Philadelphia, Pennsylvania, USA. Association for Computational Linguistics.</li>
 <li>Chin-Yew Lin. 2004. <a target="_blank" rel="noopener" href="https://aclanthology.org/W04-1013">ROUGE: A Package for Automatic Evaluation of Summaries</a>. In <em>Text Summarization Branches Out</em>, pages 74–81, Barcelona, Spain. Association for Computational Linguistics.</li>
-<li>Vedantam R, Lawrence Zitnick C, Parikh D. Cider: Consensus-based image description evaluation[C]//Proceedings of the IEEE conference on computer vision and pattern recognition. 2015: 4566-4575.</li>
+<li>Vedantam R, Lawrence Zitnick C, Parikh D. Cider: Consensus-based image description evaluation[C]&#x2F;&#x2F;Proceedings of the IEEE conference on computer vision and pattern recognition. 2015: 4566-4575.</li>
 <li>Perplexity of fixed-length models<a target="_blank" rel="noopener" href="https://huggingface.co/docs/transformers/perplexity"> explained in huggingface</a></li>
 <li><a target="_blank" rel="noopener" href="https://stanford-cs324.github.io/winter2022/lectures/capabilities/#language-modeling">Capabilities | CS324 (stanford-cs324.github.io)</a></li>
 <li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Perplexity">Perplexity - Wikipedia</a></li>
